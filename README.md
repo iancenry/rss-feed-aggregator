@@ -3,3 +3,4 @@
 
 - go get github.com/joho/godotenv
 - go mod vendor
+- go mod tidy
