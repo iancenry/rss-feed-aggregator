@@ -1,0 +1,23 @@
+package main
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+)
+
+func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	// marshal payload to JSON string and return as bytes
+	data, err := json.Marshal(payload)
+	if err != nil {
+		log.Printf("Error marshalling JSON response %v", payload)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	// set headers, status code, and write payload
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(data)
+}
