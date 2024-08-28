@@ -26,9 +26,9 @@ func main(){
 	}))
 
 	v1Router := chi.NewRouter()
-	// v1Router.HandleFunc("/healthz", readinessHandler)
+
 	v1Router.Get("/healthz", readinessHandler)
-	v1Router.Get("err", errorHandler)
+	v1Router.Get("/err", errorHandler)
 
 	// nesting a v1 router under the /v1 path - full path /v1/healthz
 	router.Mount("/v1", v1Router)
