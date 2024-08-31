@@ -35,6 +35,13 @@ func main(){
 		log.Fatal("Can't connect to database")
 	}
 
+	// convert sql.DB to database.Queries
+	queries :=  database.New(conn)
+
+	apiCfg := apiConfig{
+		DB: queries,
+	}
+
 
 	router := chi.NewRouter()
 
