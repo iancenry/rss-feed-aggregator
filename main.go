@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/iancenry/rss-feed-aggregator/handler"
 	"github.com/iancenry/rss-feed-aggregator/internal/database"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -30,18 +31,14 @@ func main(){
 		log.Fatal("DB_URL isn't found in the environment")
 	}
 
-	conn, er :=  sql.Open("postgres", dbURL)
-	if er != nil {
+	conn, err :=  sql.Open("postgres", dbURL)
+	if err != nil {
 		log.Fatal("Can't connect to database")
 	}
 
-	// convert sql.DB to database.Queries
-	queries :=  database.New(conn)
-
 	apiCfg := apiConfig{
-		DB: queries,
+		DB: database.New(conn),
 	}
-
 
 	router := chi.NewRouter()
 
@@ -56,8 +53,9 @@ func main(){
 
 	v1Router := chi.NewRouter()
 
-	v1Router.Get("/healthz", readinessHandler)
-	v1Router.Get("/err", errorHandler)
+	v1Router.Get("/healthz", handler.ReadinessHandler)
+	v1Router.Get("/err", handler.ErrorHandler)
+	v1Router.Post("/users", apiCfg.handlerCreateUser)
 
 	// nesting a v1 router under the /v1 path - full path /v1/healthz
 	router.Mount("/v1", v1Router)
@@ -68,7 +66,7 @@ func main(){
 	}
 
 	log.Printf("Listening on port %s", port)
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 
 	if err != nil {
 		log.Fatal(err)

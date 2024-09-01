@@ -29,3 +29,16 @@ FROM pg_catalog.pg_user;
 ```
 
 - After creating queries and schemas - Run `sqlc generate` so that sqlc can generate the go code for the sql files under the sql/queries and sql/schema folders.
+
+## Marshaling
+
+- The JSON tags are not part of the Go language syntax but are a feature provided by the encoding/json package. This package handles JSON encoding and decoding and respects these tags when marshaling (converting Go values to JSON) and unmarshaling (converting JSON to Go values) data
+
+```go
+type User struct{
+	ID uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Name string `json:"name"`
+}
+```
