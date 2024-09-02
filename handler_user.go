@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/iancenry/rss-feed-aggregator/handler"
+	"github.com/iancenry/rss-feed-aggregator/internal/auth"
 	"github.com/iancenry/rss-feed-aggregator/internal/database"
 	"github.com/iancenry/rss-feed-aggregator/models"
 )
@@ -26,7 +27,7 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 
 	err := decoder.Decode(&params)
 	if err != nil {
-		handler.RespondWithError(w, 400, fmt.Sprintf("Error parsing JSON: %v", err))
+		handler.RespondWithError(w, http.StatusCreated, fmt.Sprintf("Error parsing JSON: %v", err))
 		return
 	}
 
@@ -43,3 +44,21 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 
 	handler.RespondWithJSON(w, 200, models.DatabaseUserToUser(user))
 } 
+
+func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
+	apiKey, err  := auth.GetAPIKey(r.Header)
+
+	if err != nil {
+		handler.RespondWithError(w, http.StatusForbidden, fmt.Sprintf("Auth error: %v", err))
+		return
+	}
+
+	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
+	if err != nil {
+		handler.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get user: %v", err))
+		return
+	}
+
+	handler.RespondWithJSON(w, http.StatusOK, models.DatabaseUserToUser(user))
+
+}
