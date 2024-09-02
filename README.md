@@ -18,17 +18,17 @@
   - `goose -version`
 
 ## Migrations
-
+- Run in the schema folder.
 - Replace `<username>` and `<password>`.
 - goose postgres postgres://<username>:<password>@localhost:5432/rssagg up
-- To check for users sp as to get username - query:
+- To check for users as to get username - query:
 
 ```sql
 SELECT *
 FROM pg_catalog.pg_user;
 ```
 
-- After creating queries and schemas - Run `sqlc generate` so that sqlc can generate the go code for the sql files under the sql/queries and sql/schema folders.
+- After creating queries and schemas - Run `sqlc generate` in base so that sqlc can generate the go code for the sql files under the sql/queries and sql/schema folders.
 
 ## Marshaling
 
