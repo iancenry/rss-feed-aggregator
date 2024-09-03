@@ -14,10 +14,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// holds a connection to a DB
 type apiConfig struct {
 	DB *database.Queries
-} 
+}
 
 func main(){
 	godotenv.Load()
@@ -36,7 +35,7 @@ func main(){
 		log.Fatal("Can't connect to database")
 	}
 
-	apiCfg := apiConfig{
+	apiCfg := &apiConfig{
 		DB: database.New(conn),
 	}
 
@@ -56,6 +55,7 @@ func main(){
 	v1Router.Get("/healthz", handler.ReadinessHandler)
 	v1Router.Get("/err", handler.ErrorHandler)
 	v1Router.Post("/users", apiCfg.handlerCreateUser)
+	v1Router.Get("/users", apiCfg.handlerGetUser)
 	
 
 	// nesting a v1 router under the /v1 path - full path /v1/healthz
