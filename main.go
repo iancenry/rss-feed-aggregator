@@ -54,8 +54,12 @@ func main(){
 
 	v1Router.Get("/healthz", handler.ReadinessHandler)
 	v1Router.Get("/err", handler.ErrorHandler)
+	
 	v1Router.Post("/users", apiCfg.handlerCreateUser)
 	v1Router.Get("/users", apiCfg.middlewareAuth(apiCfg.handlerGetUser))
+
+	v1Router.Post("/feeds", apiCfg.middlewareAuth(apiCfg.handlerCreateFeed))
+	v1Router.Get("/feeds", apiCfg.handlerGetFeeds)
 	
 
 	// nesting a v1 router under the /v1 path - full path /v1/healthz

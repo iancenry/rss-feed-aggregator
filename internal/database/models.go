@@ -13,8 +13,16 @@ import (
 type Feed struct {
 	ID        uuid.UUID
 	Url       string
-	UserID    uuid.NullUUID
+	UserID    uuid.UUID
 	Name      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type FeedFollow struct {
+	ID        uuid.UUID
+	UserID    uuid.UUID
+	FeedID    uuid.UUID
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
