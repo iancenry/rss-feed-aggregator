@@ -4,3 +4,7 @@ INSERT INTO feed_follows
 VALUES
     ($1, $2, $3, $4, $5)
 RETURNING *;
+
+-- name: GetFeedFollows :one
+SELECT * FROM feed_follows
+WHERE id = $1;
