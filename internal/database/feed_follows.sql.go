@@ -47,20 +47,36 @@ func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowPara
 	return i, err
 }
 
-const getFeedFollows = `-- name: GetFeedFollows :one
+const getFeedFollows = `-- name: GetFeedFollows :many
 SELECT id, user_id, feed_id, created_at, updated_at FROM feed_follows
-WHERE id = $1
+WHERE user_id = $1
 `
 
-func (q *Queries) GetFeedFollows(ctx context.Context, id uuid.UUID) (FeedFollow, error) {
-	row := q.db.QueryRowContext(ctx, getFeedFollows, id)
-	var i FeedFollow
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.FeedID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) GetFeedFollows(ctx context.Context, userID uuid.UUID) ([]FeedFollow, error) {
+	rows, err := q.db.QueryContext(ctx, getFeedFollows, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FeedFollow
+	for rows.Next() {
+		var i FeedFollow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.FeedID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

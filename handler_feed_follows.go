@@ -43,8 +43,8 @@ func (apiCfg *apiConfig) handlerCreateFeedFollow(w http.ResponseWriter, r *http.
 
 }
 
-func (apiCfg *apiConfig) handlerGetFeedFollows(w http.ResponseWriter, r *http.Request) {
-	feedFollows, err := apiCfg.DB.GetFeedFollows(r.Context(), )	
+func (apiCfg *apiConfig) handlerGetFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {
+	feedFollows, err := apiCfg.DB.GetFeedFollows(r.Context(), user.ID)
 
 	if err != nil {
 		handler.RespondWithError(w, 400, fmt.Sprintf("Couldn't get feed follows: %v ", err))
@@ -52,4 +52,5 @@ func (apiCfg *apiConfig) handlerGetFeedFollows(w http.ResponseWriter, r *http.Re
 	}
 
 	handler.RespondWithJSON(w, http.StatusOK, models.DatabaseFeedFollowsToFeedFollows(feedFollows))
+
 }
