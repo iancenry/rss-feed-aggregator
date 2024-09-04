@@ -1,5 +1,6 @@
 # rss-feed-aggregator
 
+- Keeps track of rss feeds and periodically downloads them.
 - go mod init github.com/iancenry/rss-feed-aggregator
 
 ## Sample package installation flow
@@ -18,6 +19,7 @@
   - `goose -version`
 
 ## Migrations
+
 - Run in the schema folder.
 - Replace `<username>` and `<password>`.
 - goose postgres postgres://<username>:<password>@localhost:5432/rssagg up
