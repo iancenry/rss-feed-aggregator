@@ -59,12 +59,14 @@ func (apiCfg *apiConfig) handlerGetFeedFollows(w http.ResponseWriter, r *http.Re
 func (apiCfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedId := chi.URLParam(r, "feedId")
 
-	if feedId == "" {
+	_, err := uuid.Parse(feedId)
+
+	if err != nil {
 		handler.RespondWithError(w, 400, "Invalid feed id")
 		return
 	}
 
-	err := apiCfg.DB.DeleteFeedFollow(r.Context(), database.DeleteFeedFollowParams{
+	err = apiCfg.DB.DeleteFeedFollow(r.Context(), database.DeleteFeedFollowParams{
 		UserID: user.ID,
 		ID: uuid.MustParse(feedId),
 	})
