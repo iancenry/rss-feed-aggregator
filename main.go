@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/iancenry/rss-feed-aggregator/handler"
 	"github.com/iancenry/rss-feed-aggregator/internal/database"
+	"github.com/iancenry/rss-feed-aggregator/utils"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -19,6 +21,14 @@ type apiConfig struct {
 }
 
 func main(){
+	f, e := utils.UrlToFeed("https://www.wagslane.dev/index.xml")
+
+	if e != nil {
+		log.Fatal(e)
+	}
+
+	fmt.Println(f)
+
 	godotenv.Load()
 	port := os.Getenv("PORT") 
 	if port == "" {
