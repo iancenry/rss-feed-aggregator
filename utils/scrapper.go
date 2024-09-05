@@ -59,18 +59,12 @@ func scrapeFeed(db *database.Queries ,wg *sync.WaitGroup, feed database.Feed) {
 		log.Println("Found post", item.Title + "on feed " + feed.Name)
 	}
 
-	// for _, item := range rssFeed.Channel.Items {
-	// 	_, err := db.CreateFeedItem(context.Background(), database.CreateFeedItemParams{
-	// 		FeedID: feed.ID,
-	// 		Title: item.Title,
-	// 		Link: item.Link,
-	// 		Description: item.Description,
-	// 		PubDate: item.PubDate,
-	// 	})
-	// 	if err != nil {
-	// 		log.Printf("Couldn't create feed item: %v", err)
-	// 		return
-	// 	}
-	// }
-	log.Printf("Feed %s collected, %v posts found", feed.Name, len(rssFeed.Channel.Items))
+	_, err = db.CreatePost(context.Background(), database.CreatePostParams{
+    FeedID      feed.ID,
+    Url         rssFeed.Channel.Items[0].Link,
+    Title       rssFeed.Channel.Items[0].Title,
+    Description rssFeed.Channel.Items[0].Description,
+    Content     rssFeed.Channel.Items[0].Content,
+    PublishedAt rssFeed.Channel.Items[0].PubDate
+	})
 }
