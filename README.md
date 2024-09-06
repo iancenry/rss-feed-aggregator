@@ -44,3 +44,10 @@ type User struct{
 	Name string `json:"name"`
 }
 ```
+
+## env vars
+
+```
+PORT=5000
+DB_URL=postgres://<username>:<password>@localhost:5432/rssagg?sslmode=disable
+```
