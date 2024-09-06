@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/xml"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -50,8 +49,6 @@ func UrlToFeed(url string) (RSSFeed, error) {
 	if err != nil {
 		return RSSFeed{}, err
 	}
-
-	fmt.Println(feed)
 
 	return feed, nil
 }

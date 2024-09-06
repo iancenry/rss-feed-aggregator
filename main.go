@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -22,14 +21,6 @@ type apiConfig struct {
 }
 
 func main(){
-	f, e := utils.UrlToFeed("https://www.wagslane.dev/index.xml")
-
-	if e != nil {
-		log.Fatal(e)
-	}
-
-	fmt.Println(f)
-
 	godotenv.Load()
 	port := os.Getenv("PORT") 
 	if port == "" {

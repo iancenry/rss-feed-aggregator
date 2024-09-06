@@ -2,21 +2,22 @@ package utils
 
 import (
 	"context"
+	"database/sql"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/iancenry/rss-feed-aggregator/internal/database"
 )
 
 func StartScraping(db  *database.Queries, concurrency  int, timeBetweenRequest time.Duration) {
-	log.Printf("Starting scraping at %s", time.Now().Format(time.RFC3339))
-	log.Printf("Scraping on  %v goroutines at %s duration", concurrency, timeBetweenRequest)
+	log.Printf("Starting scraping at %s \n", time.Now().Format(time.RFC3339))
 
 	ticker := time.NewTicker(timeBetweenRequest)
 
 	for ; ; <-ticker.C {
-		log.Printf("Scraping at %s", time.Now().Format(time.RFC3339))
 		// fetch x number of feeds from db, x being concurrency
 		feeds, err := db.GetNextFeedsToFetch(context.Background(), int32(concurrency))
 
@@ -56,15 +57,38 @@ func scrapeFeed(db *database.Queries ,wg *sync.WaitGroup, feed database.Feed) {
 	}
 
 	for _, item := range rssFeed.Channel.Items {
-		log.Println("Found post", item.Title + "on feed " + feed.Name)
+		description := sql.NullString{}
+
+		if item.Description == "" {
+			description.String = item.Description
+			description.Valid = true
+		}
+
+		pubDate, err := time.Parse(time.RFC1123, item.PubDate)
+
+		if err != nil {
+			log.Printf("Couldn't parse date: %v with err  %v", item.PubDate ,  err)
+			continue
+		}
+
+
+		_, err = db.CreatePost(context.Background(), database.CreatePostParams{
+			ID: uuid.New(),
+			FeedID: feed.ID,
+			Url: item.Link,
+			Title: item.Title,
+			Description: description,
+			PublishedAt: pubDate,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		})
+
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates") {
+				continue
+			}
+			log.Printf("Couldn't create post: %v", err)
+		}
 	}
 
-	_, err = db.CreatePost(context.Background(), database.CreatePostParams{
-    FeedID      feed.ID,
-    Url         rssFeed.Channel.Items[0].Link,
-    Title       rssFeed.Channel.Items[0].Title,
-    Description rssFeed.Channel.Items[0].Description,
-    Content     rssFeed.Channel.Items[0].Content,
-    PublishedAt rssFeed.Channel.Items[0].PubDate
-	})
 }
