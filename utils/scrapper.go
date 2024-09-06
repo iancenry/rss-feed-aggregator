@@ -59,7 +59,7 @@ func scrapeFeed(db *database.Queries ,wg *sync.WaitGroup, feed database.Feed) {
 	for _, item := range rssFeed.Channel.Items {
 		description := sql.NullString{}
 
-		if item.Description == "" {
+		if item.Description != "" {
 			description.String = item.Description
 			description.Valid = true
 		}
